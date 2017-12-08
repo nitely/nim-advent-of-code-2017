@@ -16,33 +16,22 @@ proc solve(s: string): int =
     let
       parts = line.split(' ')
       reg = parts[0]
-      op = parts[1]
+      op = if parts[1] == "inc": 1 else: -1
       amount = parts[2].parseInt
       condleft = parts[4]
       condOp = parts[5]
       condRight = parts[6].parseInt
-    let cond = case condOp
-    of "<":
-      registry.getOrDefault(condleft) < condRight
-    of ">":
-      registry.getOrDefault(condleft) > condRight
-    of "<=":
-      registry.getOrDefault(condleft) <= condRight
-    of ">=":
-      registry.getOrDefault(condleft) >= condRight
-    of "==":
-      registry.getOrDefault(condleft) == condRight
-    else:
-      assert(condOp == "!=")
-      registry.getOrDefault(condleft) != condRight
+    let
+      regVal = registry.getOrDefault(condleft)
+      cond = case condOp
+        of "<": regVal < condRight
+        of ">": regVal > condRight
+        of "<=": regVal <= condRight
+        of ">=": regVal >= condRight
+        of "==": regVal == condRight
+        else: regVal != condRight
     if cond:
-      registry[reg] = registry.getOrDefault(reg)
-      case op
-      of "inc":
-        registry[reg].inc(amount)
-      else:
-        assert(op == "dec")
-        registry[reg].dec(amount)
+      registry[reg] = registry.getOrDefault(reg) + (amount * op)
       result = max(result, registry[reg])
 
 echo $solve("""b inc 5 if a > 1
